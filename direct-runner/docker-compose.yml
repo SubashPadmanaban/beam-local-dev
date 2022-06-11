@@ -1,0 +1,46 @@
+version: "3"
+
+services:
+  pubsub:
+    image: gcr.io/${PROJECT_ID}/pubsub_emulator:v1
+    environment:
+      - PROJECT_ID=${PROJECT_ID}
+      - PUBSUB_EMULATOR_HOST=${PUBSUB_EMULATOR_HOST}
+    build:
+      context: ./pubsub/
+      dockerfile: Dockerfile
+    ports:
+      - "8432:8432"
+    networks:
+      local_dev_net:
+        ipv4_address: 192.168.0.11
+    volumes:
+      - pubsub:/opt/data
+
+  console:
+    image: gcr.io/${PROJECT_ID}/console:v1
+    environment:
+      - USERNAME=${USER}
+      - PROJECT_ID=${PROJECT_ID}
+      - TOPIC_NAME=${TOPIC_NAME}
+      - SUBSCRIPTION_NAME=${SUBSCRIPTION_NAME}
+    build:
+      context: ./console/
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    networks:
+      local_dev_net:
+    depends_on:
+      - pubsub
+
+networks:
+  local_dev_net:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 192.168.0.0/24
+
+volumes:
+  pubsub:
