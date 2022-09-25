@@ -1,6 +1,6 @@
 package com.beamlocal;
 
-import com.beamlocal.transforms.SimplePrintFn;
+import com.beamlocal.transforms.PubsubEventHandler;
 import org.apache.beam.runners.dataflow.options.DataflowPipelineOptions;
 import org.apache.beam.sdk.Pipeline;
 import org.apache.beam.sdk.io.gcp.pubsub.PubsubIO;
@@ -27,7 +27,7 @@ public final class StreamPipeline {
                             PubsubIO.readMessagesWithAttributesAndMessageId()
                                     .fromSubscription(subscription)
                                     .withIdAttribute(MESSAGE_ATTRIBUTE))
-                    .apply("Convert Pub/Sub to string", ParDo.of(new SimplePrintFn()));
+                    .apply("Convert Pub/Sub to string", ParDo.of(new PubsubEventHandler()));
 
     }
 
