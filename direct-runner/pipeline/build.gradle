@@ -1,0 +1,30 @@
+plugins {
+    id 'java'
+}
+
+group 'com.beamlocal'
+version '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+    mavenLocal()
+}
+
+
+dependencies {
+    // https://mvnrepository.com/artifact/org.apache.beam/beam-sdks-java-core
+    implementation group: 'org.apache.beam', name: 'beam-sdks-java-core', version: '2.41.0'
+
+    // https://mvnrepository.com/artifact/org.apache.beam/beam-runners-google-cloud-dataflow-java
+    implementation group: 'org.apache.beam', name: 'beam-runners-google-cloud-dataflow-java', version: '2.41.0'
+
+    // https://mvnrepository.com/artifact/org.apache.beam/beam-runners-direct-java
+    testImplementation group: 'org.apache.beam', name: 'beam-runners-direct-java', version: '2.41.0'
+
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.1'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.1'
+}
+
+test {
+    useJUnitPlatform()
+}
