@@ -33,6 +33,25 @@ services:
       local_dev_net:
     depends_on:
       - pubsub
+  
+  pipeline:
+    image: gcr.io/${PROJECT_ID}/pipeline:v1
+    build:
+      context: ./pipeline
+      dockerfile: Dockerfile
+    network:
+      local_dev_net:
+    depends:
+      - pubsub
+      - console
+
+  bigtable:
+    image: gcr.io/${PROJECT_ID}/bigtable:v1
+    build:
+      context: ./bigtable
+      dockerfile: Dockerfile
+    network:
+      local_dev_net:
 
 networks:
   local_dev_net:
