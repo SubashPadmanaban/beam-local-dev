@@ -31,3 +31,87 @@ dependencies {
 test {
     useJUnitPlatform()
 }
+
+abstract class deployDataflowJob extends JavaExec {
+    deployDataflowJob(){
+        classpath project.sourceSets.main.runtimeClasspath
+        dependsOn 'build'
+    }
+
+    @Input
+    String jobName = project.name
+
+    @Input
+    int numWorkers = 1
+
+    @Input
+    int maxNumWorkers = 3
+
+    @Input
+    List<String> additionalArgs = []
+
+    @Input
+    String runnerType = "DirectRunner"
+
+    @Input
+    String pubsubRootUrl = "https://pubsub.googleapis.com"
+
+    @Override
+    void exec() {
+        String gcpProject
+        if (hasProperty("GCP_PROJECT_ID")){
+            gcpProject = property("GCP_PROJECT_ID")
+        }
+
+        String gcpRegion
+        if (hasProperty("GCP_REGION")){
+            gcpRegion = property("GCP_REGION")
+        }
+
+        args([
+                "--project=$gcpProject",
+                "--region=$gcpRegion",
+                "--numWorkers=$numWorkers",
+                "--maxNumWorkers=$maxNumWorkers",
+                "--jobName=$jobName",
+                "--runner=$runnerType",
+                "--pubsubRootUrl=$pubsubRootUrl",
+                "--enableStreamingEngine"
+        ]
+        + additionalArgs)
+
+        super.exec()
+    }
+}
+
+task deployStreamProcessingPipeline(type: deployDataflowJob){
+    String username = System.getenv("USER")
+
+    if (username == null){
+        username = "nobody"
+    }
+
+    String gcpProject
+    if (hasProperty("GCP_PROJECT_ID")){
+        gcpProject = property("GCP_PROJECT_ID")
+    }
+
+    String gcpRegion
+    if (hasProperty("GCP_REGION")){
+        gcpRegion = property("GCP_REGION")
+    }
+
+    String subscriptionName
+    if (hasProperty("SUBSCRIPTION_NAME")){
+        subscriptionName = property("SUBSCRIPTION_NAME")
+    }
+
+    jobName = "streaming-pipeline-${username.toLowerCase()}"
+    numWorkers = 1
+    maxNumWorkers = 1
+    runnerType = "DirectRunner"
+    pubsubRootUrl = "http://localhost:8432"
+    additionalArgs = [
+            "--subscriptionName=projects/${gcpProject}/subscriptions/${subscriptionName}"
+    ]
+}

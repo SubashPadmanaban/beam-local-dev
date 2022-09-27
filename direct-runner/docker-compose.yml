@@ -2,9 +2,9 @@ version: "3"
 
 services:
   pubsub:
-    image: gcr.io/${PROJECT_ID}/pubsub_emulator:v1
+    image: gcr.io/${GCP_PROJECT_ID}/pubsub_emulator:v1
     environment:
-      - PROJECT_ID=${PROJECT_ID}
+      - GCP_PROJECT_ID=${GCP_PROJECT_ID}
       - PUBSUB_EMULATOR_HOST=${PUBSUB_EMULATOR_HOST}
     build:
       context: ./pubsub/
@@ -18,10 +18,10 @@ services:
       - pubsub:/opt/data
 
   console:
-    image: gcr.io/${PROJECT_ID}/console:v1
+    image: gcr.io/${GCP_PROJECT_ID}/console:v1
     environment:
       - USERNAME=${USER}
-      - PROJECT_ID=${PROJECT_ID}
+      - GCP_PROJECT_ID=${GCP_PROJECT_ID}
       - TOPIC_NAME=${TOPIC_NAME}
       - SUBSCRIPTION_NAME=${SUBSCRIPTION_NAME}
     build:
@@ -35,7 +35,7 @@ services:
       - pubsub
   
   pipeline:
-    image: gcr.io/${PROJECT_ID}/pipeline:v1
+    image: gcr.io/${GCP_PROJECT_ID}/pipeline:v1
     build:
       context: ./pipeline
       dockerfile: Dockerfile
@@ -46,7 +46,7 @@ services:
       - console
 
   bigtable:
-    image: gcr.io/${PROJECT_ID}/bigtable:v1
+    image: gcr.io/${GCP_PROJECT_ID}/bigtable:v1
     build:
       context: ./bigtable
       dockerfile: Dockerfile
