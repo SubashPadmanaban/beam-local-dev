@@ -1,5 +1,7 @@
 plugins {
     id 'java'
+    id 'com.diffplug.spotless' version '5.17.0'
+    id 'net.ltgt.errorprone' version '2.0.2'
 }
 
 group 'com.beamlocal'
@@ -10,6 +12,19 @@ repositories {
     mavenLocal()
 }
 
+group = 'com.beamlocal'
+version = '1.0'
+
+plugins.apply('com.diffplug.spotless')
+
+tasks.withType(JavaCompile).configureEach {
+    options.errorprone {
+        excludePaths = '.*/src/test/*'
+        disableWarningsInGeneratedCode = true
+        error('NullAway')
+        option('NullAway:AnnotatedPackages', 'com.beamlocal')
+    }
+}
 
 dependencies {
     // https://mvnrepository.com/artifact/org.apache.beam/beam-sdks-java-core
